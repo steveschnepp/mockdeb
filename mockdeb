@@ -41,6 +41,7 @@ md5sum usr/share/doc/$REAL_PKG_NAME/README > md5sums
 cat > control <<EOF
 Package: $REAL_PKG_NAME
 Version: $VERSION
+Maintainer: dummy@example.com
 Section: main/optional
 Priority: optional
 Architecture: all
