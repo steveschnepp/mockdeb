@@ -1,0 +1,58 @@
+#! /bin/sh
+# Create a dummy debian package
+# MIT - (c) 2015 - Steve Schnepp <steve.schnepp@pwkf.org>
+
+PKG_NAME=$1
+REAL_PKG_NAME="dummy-$PKG_NAME"
+OUTDIR=$(pwd)
+VERSION=0.0.1
+
+# Create a temporary workdir
+TMPDIR=$(mktemp -d)
+trap 'rm -Rf $TMPDIR' EXIT
+cd $TMPDIR
+
+echo 2.0 > debian-binary
+
+# data.tar.gz
+mkdir -p usr/share/doc/$REAL_PKG_NAME
+cat > usr/share/doc/$REAL_PKG_NAME/README <<EOF
+This is a dummy package
+EOF
+
+tar zcvf data.tar.gz usr
+
+# control.tar.gz
+cat > empty_script <<EOF
+#! /bin/sh
+# Dummy script
+exit 0
+EOF
+
+chmod +x empty_script
+
+cp empty_script config
+cp empty_script postinst
+cp empty_script postrm
+cp empty_script prerm
+
+md5sum usr/share/doc/$REAL_PKG_NAME/README > md5sums
+
+cat > control <<EOF
+Package: $REAL_PKG_NAME
+Version: $VERSION
+Section: main/optional
+Priority: optional
+Architecture: all
+Depends:
+Provides: $PKG_NAME
+Homepage: https://github.com/steveschnepp/mockdeb
+Description: Generated Dummy for $PKG_NAME
+ This is a automatically generated package to trick dpkg
+EOF
+
+tar zcvf control.tar.gz config postinst postrm prerm md5sums control
+
+ar rv ${REAL_PKG_NAME}_${VERSION}.deb debian-binary control.tar.gz data.tar.gz
+
+mv ${REAL_PKG_NAME}_${VERSION}.deb $OUTDIR
