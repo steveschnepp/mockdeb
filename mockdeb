@@ -3,7 +3,7 @@
 # MIT - (c) 2015 - Steve Schnepp <steve.schnepp@pwkf.org>
 
 PKG_NAME=$1
-REAL_PKG_NAME="dummy-$PKG_NAME"
+REAL_PKG_NAME="mock-$PKG_NAME"
 OUTDIR=$(pwd)
 VERSION=0.0.1
 
